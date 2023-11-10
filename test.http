@@ -1,0 +1,19 @@
+### 상세 조회
+GET http://localhost:5000/api/post/detail/2
+Content-Type: application/json
+Authorization: Bearer test
+
+### 목록 조회
+GET http://localhost:5000/api/post/list?hashtagName=문&search=김&sort=ASC
+Content-Type: application/json
+Authorization: Bearer test
+
+### 좋아요
+PUT http://localhost:5000/api/post/like/1
+Content-Type: application/json
+Authorization: Bearer test
+
+### 공유
+PUT http://localhost:5000/api/post/share/1
+Content-Type: application/json
+Authorization: Bearer test
