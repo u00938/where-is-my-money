@@ -1,11 +1,17 @@
-import { Module, ValidationPipe } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, ValidationPipe } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import config from '@/config';
 import { APP_FILTER, APP_PIPE } from '@nestjs/core';
-import { LoaderModule } from './loader/loader.module';
-import { UserModule } from './modules/user.ts/user.module';
-import { ServiceExceptionToHttpExceptionFilter } from './loader/exception/error.filter';
+import { UserModule } from '@/modules/user.ts/user.module';
+import { ServiceExceptionToHttpExceptionFilter } from '@/loader/exception/error.filter';
+import winston from 'winston';
+import {
+  utilities as nestWinstonModuleUtilities,
+  WinstonModule,
+} from 'nest-winston';
+// import { LoggerModule } from '@/loader/logger';
+import { LoggerModule } from './loader/logger.module';
 
 @Module({
   imports: [
@@ -13,7 +19,7 @@ import { ServiceExceptionToHttpExceptionFilter } from './loader/exception/error.
       isGlobal: true
     }),
     TypeOrmModule.forRoot(config.db[0]),
-    LoaderModule,
+    LoggerModule,  
     UserModule
   ],
   controllers: [],
