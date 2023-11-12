@@ -8,6 +8,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import config from '@/config';
 import { ValidationPipe } from '@nestjs/common';
+import { setupSwagger } from '@/loader/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(
@@ -22,6 +23,8 @@ async function bootstrap() {
   app.use(morgan('combined'));
 
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
+
+  setupSwagger(app); // {host:post}/api-docs
 
   await app.listen(config.port)
     .then(async () => {

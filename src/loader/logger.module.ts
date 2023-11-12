@@ -6,6 +6,7 @@ import {
 import winstonDaily from 'winston-daily-rotate-file'
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import config from '@/config';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { ConfigModule } from '@nestjs/config';
           format: winston.format.combine(
             winston.format.colorize(),
             winston.format.timestamp(),
-            nestWinstonModuleUtilities.format.nestLike(process.env.APP_NAME, { prettyPrint: true }),
+            nestWinstonModuleUtilities.format.nestLike(config.app.name, { prettyPrint: true }),
           ),
         }),
         new winstonDaily ({
@@ -28,7 +29,7 @@ import { ConfigModule } from '@nestjs/config';
             }),
             winston.format.printf(
               (info) =>
-                `[${info.timestamp}] ${process.env.APP_NAME}.${info.level}: ${info.message}`,
+                `[${info.timestamp}] ${config.app.name}.${info.level}: ${info.message}`,
             ),
           ),
           dirname: process.env.LOG_DIR,
