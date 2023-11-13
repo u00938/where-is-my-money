@@ -1,21 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsDate,
   IsString
 } from 'class-validator';
+import { BudgetCategoryDto } from './budgetCategory.dto';
 
 // 예산 설정 DTO
 export class SetBudgetDto {
   @ApiProperty({ 
-    description: '카테고리 id값', 
-    required: true,
-    example: 'username1'
-  })
-  @IsString()
-  budgetCategoryId: string;
-
-  @ApiProperty({ 
-    description: '예산',
+    description: '총 예산',
     required: true,
     example: '900000'
   })
@@ -30,4 +22,10 @@ export class SetBudgetDto {
   @IsString()
   periodStart: string;
 
+  @ApiProperty({ 
+    description: '카테고리별 예산',
+    required: true,
+    example: {}
+  })
+  categoryBudget: Array<BudgetCategoryDto>
 }

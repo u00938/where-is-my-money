@@ -17,7 +17,9 @@ export default {
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [process.env.TYPEORM_ENTITIES]
+      entities: [process.env.TYPEORM_ENTITIES],
+      logging: process.env.NODE_ENV === 'prod' ? ['error', 'warn'] : 'all',
+      logger: 'file'
     } as TypeOrmModuleOptions
   ],
   proxy: {
