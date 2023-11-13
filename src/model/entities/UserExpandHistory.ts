@@ -22,7 +22,7 @@ export class UserExpandHistory {
   @Column("date", { name: "expand_date" })
   expandDate: string;
 
-  @Column("tinyint", { name: "is_sum", nullable: true, default: () => "'0'" })
+  @Column("tinyint", { name: "is_sum", nullable: true, default: () => "'1'" })
   isSum: number | null;
 
   @Column("datetime", {
