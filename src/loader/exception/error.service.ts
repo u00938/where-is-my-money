@@ -2,7 +2,8 @@ import {
   ErrorCode,
   ENTITY_CONFLICT, 
   ENTITY_NOT_FOUND,
-  UNAUTHORIZED_USER, 
+  UNAUTHORIZED_USER,
+  BAD_REQUEST, 
   SERVER_ERROR
 } from "./error.code";
 
@@ -12,6 +13,10 @@ export const EntityNotFoundException = (message?: string): ServiceException => {
 
 export const EntityConflictException = (message?: string): ServiceException => {
   return new ServiceException(ENTITY_CONFLICT, message);
+};
+
+export const BadRequestValueException = (message?: string): ServiceException => {
+  return new ServiceException(BAD_REQUEST, message);
 };
 
 export const UnauthorizedUserException = (message?: string): ServiceException => {

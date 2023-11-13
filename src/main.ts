@@ -9,6 +9,7 @@ import morgan from 'morgan';
 import config from '@/config';
 import { ValidationPipe } from '@nestjs/common';
 import { setupSwagger } from '@/loader/swagger';
+import '@/loader/dayjs';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(

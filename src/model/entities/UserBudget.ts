@@ -42,10 +42,10 @@ export class UserBudget {
   currentExpand: string | null;
 
   @Column("date", { name: "period_start" })
-  periodStart: string;
+  periodStart: Date;
 
   @Column("date", { name: "period_end" })
-  periodEnd: string;
+  periodEnd: Date;
 
   @Column("datetime", {
     name: "created_dt",

@@ -7,6 +7,7 @@ import { UserModule } from '@/modules/user/user.module';
 import { ServiceExceptionToHttpExceptionFilter } from '@/loader/exception/error.filter';
 import { LoggerModule } from '@/loader/logger.module';
 import { AuthModule } from '@/modules/auth/auth.module';
+import { BudgetModule } from '@/modules/budget/budget.module';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { AuthModule } from '@/modules/auth/auth.module';
     TypeOrmModule.forRoot(config.db[0]),
     LoggerModule,
     AuthModule,
-    UserModule
+    UserModule,
+    BudgetModule
   ],
   controllers: [],
   providers: [
