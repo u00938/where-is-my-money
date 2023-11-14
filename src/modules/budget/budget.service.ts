@@ -13,6 +13,10 @@ import { User } from '@/model/entities/User';
 import { BudgetCategory } from '@/model/entities/BudgetCategory';
 import { UserExpandHistory } from '@/model/entities/UserExpandHistory';
 import Big from 'big.js';
+import { Cache } from 'cache-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { CacheService } from '@/cache/cache.service';
+import { budgetStt } from '@/cache/cache.interface';
 
 @Injectable()
 export class BudgetService {
@@ -21,7 +25,9 @@ export class BudgetService {
     private readonly entityManager: EntityManager,
     @InjectRepository(UserBudget)
     private userBudgetRepository: Repository<UserBudget>,
-    
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
+    private cacheService: CacheService
   ) {}
 
   // 예산 설정
@@ -58,7 +64,7 @@ export class BudgetService {
         
         const per = (new Big(budget).div(new Big(setBudgetDto.budget))).times(100).toFixed(0);
 
-        const insertBudgetCt = await this.entityManager.connection.query(`
+        await this.entityManager.connection.query(`
         SELECT insert_user_budget_category(?, ?, ?, ?) AS _id
         `, [
           insertBudget[0]._id,
@@ -70,6 +76,30 @@ export class BudgetService {
       }
 
       return { message: `예산이 설정되었습니다` }
+    } catch (err) {
+      throw ServerErrorException(err.message);
+    }
+  }
+
+  async getBudgetRecommendation(query): Promise<object> {
+    try {
+      const { budget } = query;
+      let budgetStt: budgetStt = await this.cacheManager.get('budget-stt');
+
+      if (!budgetStt ||
+        (budgetStt && budgetStt.date !== dayjs().format('YYYY-MM-DD'))) {
+        await this.cacheService.budgetPer();
+        budgetStt = await this.cacheManager.get('budget-stt');
+      }
+
+      // TODO: 2차 확인 후에도 채워지지 않는다면 에러 대신 랜덤으로 짜주는 것도 괜찮을까?
+
+      const budgetCal = budgetStt.per.map(data => {
+        const [category, perNum] = data.split('-');
+        return `${category}-${new Big(budget).times(new Big(perNum).div(100))}`;
+      })
+
+      return { result: budgetCal };
     } catch (err) {
       throw ServerErrorException(err.message);
     }
