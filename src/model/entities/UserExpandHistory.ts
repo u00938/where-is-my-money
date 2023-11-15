@@ -1,14 +1,14 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
-import { UserBudget } from "./UserBudget";
+import { UserBudgetCategory } from "./UserBudgetCategory";
 
-@Index("user_budget_id", ["userBudgetId"], {})
+@Index("user_budget_category_id", ["userBudgetCategoryId"], {})
 @Entity("user_expand_history", { schema: "wmm" })
 export class UserExpandHistory {
   @Column("varchar", { primary: true, name: "id", length: 30 })
   id: string;
 
-  @Column("varchar", { name: "user_budget_id", length: 30 })
-  userBudgetId: string;
+  @Column("varchar", { name: "user_budget_category_id", length: 30 })
+  userBudgetCategoryId: string;
 
   @Column("decimal", {
     name: "expand_amount",
@@ -39,10 +39,11 @@ export class UserExpandHistory {
   })
   updatedDt: Date | null;
 
-  @ManyToOne(() => UserBudget, (userBudget) => userBudget.userExpandHistories, {
-    onDelete: "NO ACTION",
-    onUpdate: "NO ACTION",
-  })
-  @JoinColumn([{ name: "user_budget_id", referencedColumnName: "id" }])
-  userBudget: UserBudget;
+  @ManyToOne(
+    () => UserBudgetCategory,
+    (userBudgetCategory) => userBudgetCategory.userExpandHistories,
+    { onDelete: "NO ACTION", onUpdate: "NO ACTION" }
+  )
+  @JoinColumn([{ name: "user_budget_category_id", referencedColumnName: "id" }])
+  userBudgetCategory: UserBudgetCategory;
 }

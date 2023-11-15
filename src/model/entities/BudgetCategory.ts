@@ -1,5 +1,4 @@
-import { Column, Entity, OneToMany } from "typeorm";
-import { UserBudget } from "./UserBudget";
+import { Column, Entity } from "typeorm";
 
 @Entity("budget_category", { schema: "wmm" })
 export class BudgetCategory {
@@ -8,7 +7,4 @@ export class BudgetCategory {
 
   @Column("varchar", { name: "name", length: 20 })
   name: string;
-
-  @OneToMany(() => UserBudget, (userBudget) => userBudget.budgetCategory)
-  userBudgets: UserBudget[];
 }
