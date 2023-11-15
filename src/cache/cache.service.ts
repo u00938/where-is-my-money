@@ -7,10 +7,11 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { EntityManager } from 'typeorm';
 import { Logger } from 'winston';
 import Big from 'big.js';
-import { budgetStt } from './cache.interface';
+import { budgetStt, category, expandStt } from './cache.interface';
 import { Cron } from '@nestjs/schedule';
 import { UserBudgetCategory } from '@/model/entities/UserBudgetCategory';
 import calculator from '@/util/calculator';
+import { BudgetCategory } from '@/model/entities/BudgetCategory';
 
 @Injectable()
 export class CacheService {
@@ -60,26 +61,71 @@ export class CacheService {
 
     await this.cacheManager.set('budget-stt', cacheFormat);
 
-    this.logger.info(`finish budget statistics caching: ${perObj}`);
+    this.logger.info(`finish budget statistics caching: ${JSON.stringify(cacheFormat)}`);
   }
 
   // 지출(소비율) 통계
   // 21시 55분
-  @Cron('0 55 21 * * *')
+  // @Cron('0 55 21 * * *')
+  @Cron('*/5 * * * * *')
   async expandStatistics() {
     this.logger.info('start expanding statistics caching');
 
-    const curState = await this.entityManager.connection
+    // 1. 카테고리별 지출 통계
+    const curStatePerCt = await this.entityManager.connection
     .getRepository(UserBudgetCategory)
     .createQueryBuilder('userBudgetCategory')
     .select([
-      'userBudgetCategory.budget_category_id AS budgetCategoryId',
+      'budgetCategory.name AS budgetCategoryName',
       'userBudgetCategory.budget AS budget',
       'userBudgetCategory.current_expand AS currentExpand',
       'userBudget.period_start AS periodStart',
       'userBudget.period_end AS periodEnd'
     ])
     .innerJoin(UserBudget, 'userBudget', 'userBudget.id = userBudgetCategory.user_budget_id')
+    .innerJoin(BudgetCategory, 'budgetCategory', 'budgetCategory.id = userBudgetCategory.budget_category_id')
+    .where(`NOW() BETWEEN userBudget.period_start AND userBudget.period_end`)
+    .getRawMany();
+
+    const categoryAvgRate = {}; // { '식비': 80 }
+    const categoryCount = {};
+    for (let data of curStatePerCt) {
+      const expandingRate = calculator.expandingRate(
+        data.budget, 
+        data.periodStart, 
+        data.periodEnd, 
+        data.currentExpand
+      );
+
+      if (!categoryAvgRate[data.budgetCategoryName]) {
+        categoryAvgRate[data.budgetCategoryName] = new Big(expandingRate).toString();
+        categoryCount[data.budgetCategoryName] = 1;
+      } else {
+        categoryAvgRate[data.budgetCategoryName] = new Big(categoryAvgRate[data.budgetCategoryName])
+        .plus(new Big(expandingRate))
+        .toString();
+        categoryCount[data.budgetCategoryName] ++;
+      }
+
+    }
+
+    for (let [key, value] of Object.entries(categoryAvgRate)) {
+      categoryAvgRate[key] = new Big(value)
+      .div(categoryCount[key])
+      .toFixed(0)
+      .toString();
+    }
+
+    // 2. 전체 지출 통계
+    const curState = await this.entityManager.connection
+    .getRepository(UserBudget)
+    .createQueryBuilder('userBudget')
+    .select([
+      'userBudget.budget AS budget',
+      'userBudget.current_expand AS currentExpand',
+      'userBudget.period_start AS periodStart',
+      'userBudget.period_end AS periodEnd'
+    ])
     .where(`NOW() BETWEEN userBudget.period_start AND userBudget.period_end`)
     .getRawMany();
 
@@ -95,13 +141,24 @@ export class CacheService {
       return acc.plus(new Big(expandingRate));
     }, new Big(0)).div(new Big(curState.length)).toFixed(0).toString();
 
-    const cacheFormat = {
-      per: avgExpandingRate,
+    const cacheFormat: expandStt = {
+      totalPer: avgExpandingRate,
+      categoryPer: categoryAvgRate,
       date: dayjs().format('YYYY-MM-DD')
     }
-
+    
     await this.cacheManager.set('expand-stt', cacheFormat);
 
-    this.logger.info(`end expanding statistics caching - ${avgExpandingRate}%: ${curState.length}명`);
+    this.logger.info(`end expanding statistics caching - ${JSON.stringify(cacheFormat)}`);
+  }
+
+  // 예산 카테고리 캐싱
+  async categoryData() {
+    const category: Array<category> = await this.entityManager.connection
+    .getRepository(BudgetCategory)
+    .find();
+
+    await this.cacheManager.set('category', category);
+
   }
 }
