@@ -1,19 +1,50 @@
-### 상세 조회
-GET http://localhost:5000/api/post/detail/2
+### 회원가입
+POST http://localhost:5000/api/user/signup
 Content-Type: application/json
 Authorization: Bearer test
 
-### 목록 조회
-GET http://localhost:5000/api/post/list?hashtagName=문&search=김&sort=ASC
+{
+  "username": "username6",
+  "password": "asdfjkjdddl1!@"
+}
+
+### 로그인
+POST http://localhost:5000/api/auth/signin
 Content-Type: application/json
 Authorization: Bearer test
 
-### 좋아요
-PUT http://localhost:5000/api/post/like/1
-Content-Type: application/json
-Authorization: Bearer test
+{
+  "username": "username1",
+  "password": "asdfjkjdddl1!"
+}
 
-### 공유
-PUT http://localhost:5000/api/post/share/1
+### 예산 설정
+POST http://localhost:5000/api/budget/setting
 Content-Type: application/json
-Authorization: Bearer test
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IkVVSUQyMzExMTIxNjQ4MjUwMDAwMDIiLCJ1c2VybmFtZSI6InVzZXJuYW1lMSIsImNyZWF0ZWREdCI6IjIwMjMtMTEtMTJUMDc6NDg6MjUuMDAwWiIsInVwZGF0ZWREdCI6IjIwMjMtMTEtMTJUMDc6NDg6MjUuMDAwWiIsImlhdCI6MTY5OTk2MzYwOSwiZXhwIjoxNjk5OTY4NjA5fQ.3YCMNN-Litw9cHn1lcWLCnCLk228LlBNFlAWoOw7P4g
+
+{
+  "budget": "300000",
+  "periodStart": "2023-11-13",
+  "categoryBudget": [
+    {
+      "budgetCategoryId": "BG2311120004",
+      "budget": "100000"
+    },
+    {
+      "budgetCategoryId": "BG2311120002",
+      "budget": "200000"
+    }
+  ]
+}
+
+### 예산 추천
+GET http://localhost:5000/api/budget/recommendation?budget=900000
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IkVVSUQyMzExMTIxNjQ4MjUwMDAwMDIiLCJ1c2VybmFtZSI6InVzZXJuYW1lMSIsImNyZWF0ZWREdCI6IjIwMjMtMTEtMTJUMDc6NDg6MjUuMDAwWiIsInVwZGF0ZWREdCI6IjIwMjMtMTEtMTJUMDc6NDg6MjUuMDAwWiIsImlhdCI6MTY5OTk3MDUyMCwiZXhwIjoxNjk5OTc1NTIwfQ.Hd2JqlyNK3Rvgw01jgECg0dXcZ_GFXBB-IYcI5WMbUw
+
+
+### 더미 데이터 생성
+POST http://localhost:5000/api/budget/test
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IkVVSUQyMzExMTIxNjQ4MjUwMDAwMDIiLCJ1c2VybmFtZSI6InVzZXJuYW1lMSIsImNyZWF0ZWREdCI6IjIwMjMtMTEtMTJUMDc6NDg6MjUuMDAwWiIsInVwZGF0ZWREdCI6IjIwMjMtMTEtMTJUMDc6NDg6MjUuMDAwWiIsImlhdCI6MTY5OTgwNjQwMCwiZXhwIjoxNjk5ODExNDAwfQ.JMioR-wJbR2oFaZ3k2ywh8RuhzGeqLncQc-8v9NTkS0

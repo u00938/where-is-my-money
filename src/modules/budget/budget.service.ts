@@ -81,6 +81,7 @@ export class BudgetService {
     }
   }
 
+  // 예산 추천
   async getBudgetRecommendation(query): Promise<object> {
     try {
       const { budget } = query;
@@ -88,7 +89,7 @@ export class BudgetService {
 
       if (!budgetStt ||
         (budgetStt && budgetStt.date !== dayjs().format('YYYY-MM-DD'))) {
-        await this.cacheService.budgetPer();
+        await this.cacheService.budgetStatistics();
         budgetStt = await this.cacheManager.get('budget-stt');
       }
 
