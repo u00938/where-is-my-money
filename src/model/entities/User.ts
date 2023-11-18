@@ -1,5 +1,6 @@
 import { Column, Entity, Index, OneToMany } from "typeorm";
 import { UserBudget } from "./UserBudget";
+import { UserDiscordService } from "./UserDiscordService";
 
 @Index("username_UNIQUE", ["username"], { unique: true })
 @Entity("user", { schema: "wmm" })
@@ -27,4 +28,7 @@ export class User {
 
   @OneToMany(() => UserBudget, (userBudget) => userBudget.user)
   userBudgets: UserBudget[];
+
+  @OneToMany(() => UserDiscordService, (userDiscordService) => userDiscordService.user)
+  userDiscordServices: UserDiscordService[];
 }

@@ -28,13 +28,13 @@ export class UserBudget {
   budget: string | null;
 
   @Column("decimal", {
-    name: "current_expand",
+    name: "acc_spend",
     nullable: true,
     precision: 18,
     scale: 4,
     default: () => "'0.0000'",
   })
-  currentExpand: string | null;
+  accSpend: string | null;
 
   @Column("date", { name: "period_start" })
   periodStart: string;

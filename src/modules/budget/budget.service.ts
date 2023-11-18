@@ -11,7 +11,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserBudget } from '@/model/entities/UserBudget';
 import { User } from '@/model/entities/User';
 import { BudgetCategory } from '@/model/entities/BudgetCategory';
-import { UserExpandHistory } from '@/model/entities/UserExpandHistory';
+import { UserSpendHistory } from '@/model/entities/UserSpendHistory';
 import Big from 'big.js';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -139,7 +139,7 @@ export class BudgetService {
         periodEnd
       ])
 
-      // insert budget, expand history
+      // insert budget, spend history
       for (let ct of randomCt) {
         const budget = (Math.floor(Math.random() * 20) + 1).toString().padEnd(6, '0');
         const per = (new Big(budget).div(new Big(totalBudget))).times(100).toFixed(0);
@@ -159,15 +159,15 @@ export class BudgetService {
           return {
             id: '',
             userBudgetCategoryId: insertBudgetCt[0]._id,
-            expandAmount: (Math.floor(Math.random() * 10) + 1).toString().padEnd(5, '0'),
-            expandDate: dayjs(today).add(Math.floor(Math.random() * 10), 'd').format('YYYY-MM-DD')
+            spendAmount: (Math.floor(Math.random() * 10) + 1).toString().padEnd(5, '0'),
+            spendDate: dayjs(today).add(Math.floor(Math.random() * 10), 'd').format('YYYY-MM-DD')
           }
         })
 
         await this.entityManager.connection
         .createQueryBuilder()
         .insert()
-        .into(UserExpandHistory)
+        .into(UserSpendHistory)
         .values(value)
         .execute()
 
