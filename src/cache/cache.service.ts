@@ -7,7 +7,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { EntityManager } from 'typeorm';
 import { Logger } from 'winston';
 import Big from 'big.js';
-import { budgetStt, category, expandStt } from './cache.interface';
+import { budgetStt, category, spendStt } from './cache.interface';
 import { Cron } from '@nestjs/schedule';
 import { UserBudgetCategory } from '@/model/entities/UserBudgetCategory';
 import calculator from '@/util/calculator';
@@ -66,10 +66,9 @@ export class CacheService {
 
   // 지출(소비율) 통계
   // 21시 55분
-  // @Cron('0 55 21 * * *')
-  @Cron('*/5 * * * * *')
-  async expandStatistics() {
-    this.logger.info('start expanding statistics caching');
+  @Cron('0 55 21 * * *')
+  async spendStatistics() {
+    this.logger.info('start spend statistics caching');
 
     // 1. 카테고리별 지출 통계
     const curStatePerCt = await this.entityManager.connection
@@ -78,7 +77,7 @@ export class CacheService {
     .select([
       'budgetCategory.name AS budgetCategoryName',
       'userBudgetCategory.budget AS budget',
-      'userBudgetCategory.current_expand AS currentExpand',
+      'userBudgetCategory.acc_spend AS accSpend',
       'userBudget.period_start AS periodStart',
       'userBudget.period_end AS periodEnd'
     ])
@@ -90,19 +89,19 @@ export class CacheService {
     const categoryAvgRate = {}; // { '식비': 80 }
     const categoryCount = {};
     for (let data of curStatePerCt) {
-      const expandingRate = calculator.expandingRate(
+      const spendingRate = calculator.spendingRate(
         data.budget, 
         data.periodStart, 
         data.periodEnd, 
-        data.currentExpand
+        data.accSpend
       );
 
       if (!categoryAvgRate[data.budgetCategoryName]) {
-        categoryAvgRate[data.budgetCategoryName] = new Big(expandingRate).toString();
+        categoryAvgRate[data.budgetCategoryName] = new Big(spendingRate).toString();
         categoryCount[data.budgetCategoryName] = 1;
       } else {
         categoryAvgRate[data.budgetCategoryName] = new Big(categoryAvgRate[data.budgetCategoryName])
-        .plus(new Big(expandingRate))
+        .plus(new Big(spendingRate))
         .toString();
         categoryCount[data.budgetCategoryName] ++;
       }
@@ -122,34 +121,34 @@ export class CacheService {
     .createQueryBuilder('userBudget')
     .select([
       'userBudget.budget AS budget',
-      'userBudget.current_expand AS currentExpand',
+      'userBudget.acc_spend AS accSpend',
       'userBudget.period_start AS periodStart',
       'userBudget.period_end AS periodEnd'
     ])
     .where(`NOW() BETWEEN userBudget.period_start AND userBudget.period_end`)
     .getRawMany();
 
-    const avgExpandingRate = curState.reduce((acc, cur) => {
+    const avgSpendingRate = curState.reduce((acc, cur) => {
       // 소비율 util 사용
-      const expandingRate = calculator.expandingRate(
+      const spendingRate = calculator.spendingRate(
         cur.budget, 
         cur.periodStart, 
         cur.periodEnd, 
-        cur.currentExpand
+        cur.accSpend
       );
 
-      return acc.plus(new Big(expandingRate));
+      return acc.plus(new Big(spendingRate));
     }, new Big(0)).div(new Big(curState.length)).toFixed(0).toString();
 
-    const cacheFormat: expandStt = {
-      totalPer: avgExpandingRate,
+    const cacheFormat: spendStt = {
+      totalPer: avgSpendingRate,
       categoryPer: categoryAvgRate,
       date: dayjs().format('YYYY-MM-DD')
     }
     
-    await this.cacheManager.set('expand-stt', cacheFormat);
+    await this.cacheManager.set('spend-stt', cacheFormat);
 
-    this.logger.info(`end expanding statistics caching - ${JSON.stringify(cacheFormat)}`);
+    this.logger.info(`end spending statistics caching - ${JSON.stringify(cacheFormat)}`);
   }
 
   // 예산 카테고리 캐싱

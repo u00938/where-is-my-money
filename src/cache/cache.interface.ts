@@ -8,7 +8,7 @@ export interface category {
   name: string
 }
 
-export interface expandStt {
+export interface spendStt {
   totalPer: string,
   categoryPer: object,
   date: string

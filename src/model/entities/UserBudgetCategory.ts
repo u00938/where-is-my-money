@@ -7,7 +7,7 @@ import {
   OneToMany,
 } from "typeorm";
 import { UserBudget } from "./UserBudget";
-import { UserExpandHistory } from "./UserExpandHistory";
+import { UserSpendHistory } from "./UserSpendHistory";
 
 @Index("user_budget_id", ["userBudgetId"], {})
 @Entity("user_budget_category", { schema: "wmm" })
@@ -40,13 +40,13 @@ export class UserBudgetCategory {
   budgetPer: string | null;
 
   @Column("decimal", {
-    name: "current_expand",
+    name: "acc_spend",
     nullable: true,
     precision: 18,
     scale: 4,
     default: () => "'0.0000'",
   })
-  currentExpand: string | null;
+  accSpend: string | null;
 
   @Column("datetime", {
     name: "created_dt",
@@ -69,8 +69,8 @@ export class UserBudgetCategory {
   userBudget: UserBudget;
 
   @OneToMany(
-    () => UserExpandHistory,
-    (userExpandHistory) => userExpandHistory.userBudgetCategory
+    () => UserSpendHistory,
+    (userSpendHistory) => userSpendHistory.userBudgetCategory
   )
-  userExpandHistories: UserExpandHistory[];
+  userSpendHistories: UserSpendHistory[];
 }
