@@ -285,7 +285,7 @@ END
   1. 디스코드 웹훅 메시지 포맷으로 완성
   2. @nestjs/axios 사용하여 유저의 디스코드 웹훅 url로 post 요청
 
-<img src="https://i.imgur.com/I8WGvJC.png" alt="logo" width="90%" />
+<img src="https://i.imgur.com/I8WGvJC.png" alt="logo" width="50%" />
 
 
 ### Discord Webhook을 활용한 지출 안내 서비스
@@ -308,7 +308,7 @@ END
   1. 디스코드 웹훅 메시지 포맷으로 완성
   2. @nestjs/axios 사용하여 유저의 디스코드 웹훅 url로 post 요청
 
-<img src="https://i.imgur.com/TvafRlo.png" alt="logo" width="90%" />
+<img src="https://i.imgur.com/TvafRlo.png" alt="logo" width="50%" />
 
 
 <br/>
