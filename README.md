@@ -3,7 +3,7 @@
 </div>
 
 
-# WHERE IS MY MONEY
+# 💸WHERE IS MY MONEY - 예산 관리 어플리케이션
 
 **원하는만큼 한달 예산을 설정하고, 지출을 관리합니다**
 
