@@ -27,8 +27,8 @@ export class WebhookService {
   ) {}
 
   // 오늘 지출 추천 consulting_guide
-  @Cron('*/5 * * * * *') // 테스트용
-  // @Cron('0 30 8 * * *') // 오전 8시 30분
+  // @Cron('*/5 * * * * *') // 테스트용
+  @Cron('0 30 8 * * *') // 오전 8시 30분
   async consultingGuideDiscord() {
     this.logger.info(`start today's spending recommendation service - discord`)
 
