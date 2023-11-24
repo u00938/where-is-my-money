@@ -12,6 +12,7 @@ import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 import { CacheServiceModule } from './cache/cache.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { WebhookModule } from '@/modules/webhook/webhook.module';
+import { SpendModule } from '@/modules/spend/spend.module';
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import { WebhookModule } from '@/modules/webhook/webhook.module';
     UserModule,
     BudgetModule,
     CacheServiceModule,
-    WebhookModule
+    WebhookModule,
+    SpendModule
   ],
   controllers: [],
   providers: [

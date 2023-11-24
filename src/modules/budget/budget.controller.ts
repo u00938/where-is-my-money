@@ -19,6 +19,14 @@ export class BudgetController {
     return this.budgetService.setBudget(req.user, setBudgetDto);
   }
 
+  @ApiOperation({ summary: '예산 카테고리 목록' })
+  @Get('/category')
+  @UseGuards(AuthGuard('jwt'))
+  getCategory(
+  ): Promise<object> {
+    return this.budgetService.getCategory();
+  }
+
   @ApiOperation({ summary: '예산 추천' })
   @ApiResponse({
     status: 200,
