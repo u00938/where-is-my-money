@@ -76,8 +76,8 @@ export class BudgetService {
       }
 
       return { message: `예산이 설정되었습니다` }
-    } catch (err) {
-      throw ServerErrorException(err.message);
+    } catch (e) {
+      throw e;
     }
   }
 
@@ -112,8 +112,8 @@ export class BudgetService {
       })
 
       return { result: budgetCal };
-    } catch (err) {
-      throw ServerErrorException(err.message);
+    } catch (e) {
+      throw e;
     }
   }
 

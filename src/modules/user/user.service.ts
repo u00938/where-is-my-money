@@ -37,8 +37,8 @@ export class UserService {
       }
   
       return { message: '회원가입에 성공했습니다' };
-    } catch (err) {
-      throw ServerErrorException(err.message);
+    } catch (e) {
+      throw e;
     }
   }
 

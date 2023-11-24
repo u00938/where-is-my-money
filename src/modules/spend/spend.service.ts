@@ -62,8 +62,19 @@ export class SpendService {
       }
 
       return { message: `예산이 설정되었습니다` }
-    } catch (err) {
-      throw ServerErrorException(err.message);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async getSpend(currentUser): Promise<object> {
+    try {
+      throw BadRequestValueException(`지출 등록 실패/n다시 시도해주세요`);
+
+
+      return {};
+    } catch (e) {
+      throw e;
     }
   }
 

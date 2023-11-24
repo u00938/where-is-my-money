@@ -12,11 +12,20 @@ export class SpendController {
   @ApiOperation({ summary: '지출 생성' })
   @Post()
   @UseGuards(AuthGuard('jwt'))
-  setBudget(
+  addSpend(
     @Body(ValidationPipe) addSpendDto: AddSpendDto,
     @Request() req
   ): Promise<object> {
     return this.spendService.addSpend(req.user, addSpendDto);
+  }
+
+  @ApiOperation({ summary: '지출 조회' })
+  @Get()
+  @UseGuards(AuthGuard('jwt'))
+  getSpend(
+    @Request() req
+  ): Promise<object> {
+    return this.spendService.getSpend(req.user);
   }
 
 }

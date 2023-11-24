@@ -48,8 +48,8 @@ export class AuthService {
 
       return { accessToken };
 
-    } catch (err) {
-      throw ServerErrorException(err.message);
+    } catch (e) {
+      throw e;
     }
   }
 
