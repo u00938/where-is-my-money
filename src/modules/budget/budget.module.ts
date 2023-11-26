@@ -13,6 +13,7 @@ import { CacheServiceModule } from '@/cache/cache.module';
     CacheServiceModule
   ],
   controllers: [BudgetController],
-  providers: [BudgetService]
+  providers: [BudgetService],
+  exports: [BudgetService]
 })
 export class BudgetModule {}

@@ -16,7 +16,7 @@ import Big from 'big.js';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CacheService } from '@/cache/cache.service';
-import { budgetStt } from '@/cache/cache.interface';
+import { budgetStt, category } from '@/cache/cache.interface';
 
 @Injectable()
 export class BudgetService {
@@ -76,9 +76,20 @@ export class BudgetService {
       }
 
       return { message: `예산이 설정되었습니다` }
-    } catch (err) {
-      throw ServerErrorException(err.message);
+    } catch (e) {
+      throw e;
     }
+  }
+
+  async getCategory(): Promise<Array<category>> {
+    let category: Array<category> = await this.cacheManager.get('category');
+
+    if (!category) {
+      await this.cacheService.categoryData();
+      category = await this.cacheManager.get('category');
+    }
+
+    return category;
   }
 
   // 예산 추천
@@ -101,8 +112,8 @@ export class BudgetService {
       })
 
       return { result: budgetCal };
-    } catch (err) {
-      throw ServerErrorException(err.message);
+    } catch (e) {
+      throw e;
     }
   }
 
