@@ -81,8 +81,8 @@ export class BudgetService {
     }
   }
 
-  async getCategory(): Promise<category> {
-    let category: category = await this.cacheManager.get('category');
+  async getCategory(): Promise<Array<category>> {
+    let category: Array<category> = await this.cacheManager.get('category');
 
     if (!category) {
       await this.cacheService.categoryData();

@@ -3,6 +3,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SpendService } from './spend.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AddSpendDto } from './dto/addSpend.dto';
+import { GetSpendListQueryDto } from './dto/GetSpendListQuery.dto';
 
 @ApiTags('지출')
 @Controller('spend')
@@ -22,10 +23,11 @@ export class SpendController {
   @ApiOperation({ summary: '지출 조회' })
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  getSpend(
-    @Request() req
+  getSpendList(
+    @Request() req,
+    @Query(ValidationPipe) getSpendListQueryDto: GetSpendListQueryDto,
   ): Promise<object> {
-    return this.spendService.getSpend(req.user);
+    return this.spendService.getSpendList(req.user, getSpendListQueryDto);
   }
 
 }

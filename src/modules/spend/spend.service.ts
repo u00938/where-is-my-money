@@ -9,12 +9,15 @@ import { BadRequestValueException, ServerErrorException } from '@/loader/excepti
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserBudget } from '@/model/entities/UserBudget';
 import { UserBudgetCategory } from '@/model/entities/UserBudgetCategory';
+import { UserSpendHistory } from '@/model/entities/UserSpendHistory';
+import { BudgetService } from '../budget/budget.service';
 
 @Injectable()
 export class SpendService {
   constructor(
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
     private readonly entityManager: EntityManager,
+    private budgetService: BudgetService
   ) {}
 
   // 지출 생성
@@ -67,12 +70,55 @@ export class SpendService {
     }
   }
 
-  async getSpend(currentUser): Promise<object> {
+  async getSpendList(currentUser, getSpendListQueryDto): Promise<object> {
     try {
-      throw BadRequestValueException(`지출 등록 실패/n다시 시도해주세요`);
+      const {
+        periodStart,
+        periodEnd,
+        minAmount,
+        maxAmount
+      } = getSpendListQueryDto;
 
+      let query = await this.entityManager.connection
+      .getRepository(UserSpendHistory)
+      .createQueryBuilder('userSpendHistory')
+      .select([
+        'CAST(userSpendHistory.spend_amount AS UNSIGNED) AS spendAmount',
+        'userSpendHistory.description AS description',
+        'userSpendHistory.spend_date AS spendDate'
+      ])
+      .innerJoin(
+        UserBudgetCategory, 
+        'userBudgetCategory', 
+        'userBudgetCategory.id = userSpendHistory.user_budget_category_id'
+      )
+      .innerJoin(
+        UserBudget, 
+        'userBudget', 
+        `userBudget.id = userBudgetCategory.user_budget_id
+        AND userBudget.user_id = "${currentUser.id}"`
+      )
+      .where(`userSpendHistory.spend_date BETWEEN :periodStart AND :periodEnd`, {
+        periodStart,
+        periodEnd
+      })
+      .andWhere(`userSpendHistory.spend_amount BETWEEN :minAmount AND :maxAmount`, {
+        minAmount,
+        maxAmount
+      })
 
-      return {};
+      if (!!getSpendListQueryDto.category) {
+        const categoryCache = await this.budgetService.getCategory();
+        const budgetCategoryId = categoryCache.find(el => el.name === getSpendListQueryDto.category).id;
+
+        query = query.andWhere('userBudgetCategory.budget_category_id = :budgetCategoryId', { budgetCategoryId });
+      }
+
+      // TODO: 카테고리 추가, 지출합계 추가
+
+      const list = await query.getRawMany();
+
+      return list;
     } catch (e) {
       throw e;
     }

@@ -27,7 +27,7 @@ export default {
   },
   token: {
     accessTokenSecret: process.env.NODE_ENV === 'prod' ? process.env.ACCESS_TOKEN_SECRET : 'wow~~',
-    accessTokenExp: process.env.NODE_ENV === 'prod' ? process.env.ACCESS_TOKEN_EXP : 5000
+    accessTokenExp: process.env.NODE_ENV === 'prod' ? process.env.ACCESS_TOKEN_EXP : 86400
   },
   app: {
     name: process.env.APP_NAME
